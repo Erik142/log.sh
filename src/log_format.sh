@@ -37,9 +37,9 @@ function _get_debug_log_format() {
 function _get_log_format() {
     if [[ "${LOG_LEVELS["$1"]}" -le "${LOG_LEVELS["$MAX_LOG_LEVEL"]}" ]]; then
         if [ "$MAX_LOG_LEVEL" == "$LOG_DEBUG" ]; then 
-            _get_debug_log_format "$1"
+            _get_debug_log_format
         else
-            _get_default_log_format "$1"
+            _get_default_log_format
         fi
     fi
 }
@@ -85,7 +85,7 @@ function _get_debug_log_message() {
 }
 
 function _get_log_message() {
-    if [[ "${LOG_LEVELS["$1"]}" -le "${LOG_LEVELS["$MAX_LOG_LEVEL"]}" ]]; then
+    if [[ "${LOG_LEVELS["$2"]}" -le "${LOG_LEVELS["$MAX_LOG_LEVEL"]}" ]]; then
         if [ "$MAX_LOG_LEVEL" == "$LOG_DEBUG" ]; then 
             _get_debug_log_message "$@"
         else

@@ -2,6 +2,9 @@
 
 log.sh is a minimal log framework for bash scripts. It gives the user colored printouts of log messages with the option of setting the highest log level that should be printed out. It has been designed with scripts in mind, therefore the log messages are printed to stderr instead of stdout, ensuring that the user can print log messages inside of functions that are returning values without corrupting the returned values.
 
+<img width="780" alt="log sh-example" src="https://github.com/Erik142/log.sh/assets/4168364/16092c40-1897-43d0-aff9-0d56f2a739f5">
+
+
 ## Installation
 
 Simply clone this git repository and store it somewhere centrally, or add it as a submodule if including it in a larger bash project:

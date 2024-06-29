@@ -2,6 +2,7 @@
 
 this_script_dir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
+# shellcheck source-path=SCRIPTDIR
 . "${this_script_dir}/../src/log.sh"
 
 function debug_func() {

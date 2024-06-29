@@ -1,0 +1,32 @@
+name: Run bats tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          ignore_paths: >-
+            ./bats/*
+            ./log.sh/*
+        env:
+          SHELLCHECK_OPTS: -e SC2059 -x
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout git repository
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: run tests
+        run: make test

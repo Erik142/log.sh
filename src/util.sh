@@ -7,7 +7,7 @@ if [ -z "$util_initialized" ]; then
     BASH_LINENO_INDEXES=()
     export BASH_LINENO_INDEXES
 
-    exportutil_initialized="yes"
+    export util_initialized="yes"
 fi
 
 function _get_func_name_index() {

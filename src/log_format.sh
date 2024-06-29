@@ -3,6 +3,7 @@
 if [ -z "$log_format_initialized" ]; then
     # shellcheck source-path=SCRIPTDIR
     source "${LOG_SH_SCRIPT_DIR}/log_level.sh"
+    # shellcheck source-path=SCRIPTDIR
     source "${LOG_SH_SCRIPT_DIR}/util.sh"
 
     LOG_LEVEL_WIDTH=12

@@ -6,7 +6,9 @@ export LOG_SH_SCRIPT_DIR
 if [ -z "$log_initialized" ]; then
     # shellcheck source-path=SCRIPTDIR
     source "${LOG_SH_SCRIPT_DIR}/log_level.sh"
+    # shellcheck source-path=SCRIPTDIR
     source "${LOG_SH_SCRIPT_DIR}/log_format.sh"
+    # shellcheck source-path=SCRIPTDIR
     source "${LOG_SH_SCRIPT_DIR}/util.sh"
 
     log_initialized="yes"

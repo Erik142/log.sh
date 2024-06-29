@@ -15,16 +15,19 @@ if [ -z "$log_initialized" ]; then
 fi
 
 
-function log_init() {
-    max_log_level="$1"
+function set_max_log_level() {
+    declare max_log_level="LOG_$1"
 
-    if [ -n "$max_log_level" ]; then
-        if [ -n "${LOG_LEVELS[$max_log_level]}" ]; then
-            MAX_LOG_LEVEL="$max_log_level"
+    if [ -n "$1" ]; then
+        if [ -n "${LOG_LEVELS[${!max_log_level}]}" ]; then
+            MAX_LOG_LEVEL="${!max_log_level}"
         else
-            log "$LOG_ERROR" "'$max_log_level' is not a valid log level"
+            log "$LOG_ERROR" "'${!max_log_level}' is not a valid log level"
             exit 1
         fi
+    else
+        log_err "${FUNCNAME[0]} requires an argument"
+        exit 1
     fi
 }
 

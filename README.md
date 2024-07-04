@@ -35,7 +35,7 @@ log "My log message" # Same as log_info
 The highest printable log level can be set using:
 
 ```bash
-set_log_max_level <log level>
+set_max_log_level <log level>
 ```
 
 where valid log levels are:

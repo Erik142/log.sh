@@ -38,7 +38,8 @@ function _log() {
 
     local log_level="$2"
     _get_log_message "$@" "$func_name_index" "$line_number_index"
-    printf "$(_get_log_format "$log_level")" "${LOG_MESSAGE[@]}" >&2
+    _get_stdout_fd_type
+    printf "$(_get_log_format "$log_level")" "${LOG_MESSAGE[@]}" >&3
 
     unset "FUNCNAME_INDEXES[-1]"
     unset "BASH_LINENO_INDEXES[-1]"

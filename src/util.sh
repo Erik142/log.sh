@@ -46,3 +46,22 @@ function _set_line_number_index() {
 
     BASH_LINENO_INDEXES+=("$line_number_index")
 }
+
+FORMOPT=
+TYPEFORM=
+
+function _stat() {
+  if [ -z "$FORMOPT" ]; then
+    if /usr/bin/stat --version >/dev/null 2>&1; then
+      FORMOPT=--format
+      TYPEFORM=%F
+    else
+      FORMOPT=-f
+      TYPEFORM=%HT
+    fi
+  fi
+  case $1 in
+    type) FORMARG="$FORMOPT $TYPEFORM" ; shift ;;
+  esac
+  /usr/bin/stat -L "$FORMARG" "$@"
+}

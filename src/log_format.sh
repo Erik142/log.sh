@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+FD_TYPE_TTY="tty"
+FD_TYPE_PIPE="pipe"
+FD_TYPE_FILE="file"
+
+export FD_TYPE_TTY
+export FD_TYPE_PIPE
+export FD_TYPE_FILE
+
 if [ -z "$log_format_initialized" ]; then
     # shellcheck source-path=SCRIPTDIR
     source "${LOG_SH_SCRIPT_DIR}/log_level.sh"
@@ -27,11 +35,19 @@ function log_filename_path() {
 }
 
 function _get_default_log_format() {
-    printf "%s" "%b%-${LOG_LEVEL_WIDTH}s%b %s\n"
+    if [ "$LOG_FD_TYPE" == "$FD_TYPE_TTY" ]; then
+        printf "%s" "%b%-${LOG_LEVEL_WIDTH}s%b %s\n"
+    else
+        printf "%s" "%-${LOG_LEVEL_WIDTH}s %s\n"
+    fi
 }
 
 function _get_debug_log_format() {
-    printf "%s" "%b%-${LOG_LEVEL_WIDTH}s%b %-${LOG_METADATA_DEBUG_WIDTH}s %s\n"
+    if [ "$LOG_FD_TYPE" == "$FD_TYPE_TTY" ]; then
+        printf "%s" "%b%-${LOG_LEVEL_WIDTH}s%b %-${LOG_METADATA_DEBUG_WIDTH}s %s\n"
+    else
+        printf "%s" "%-${LOG_LEVEL_WIDTH}s %-${LOG_METADATA_DEBUG_WIDTH}s %s\n"
+    fi
 }
 
 function _get_log_format() {
@@ -48,9 +64,15 @@ function _set_log_level() {
     local log_level="$1"
     declare color=COLOR_$log_level
 
-    LOG_MESSAGE+=("${!color}")
-    LOG_MESSAGE+=("[$log_level]")
-    LOG_MESSAGE+=("$COLOR_DEFAULT")
+    _get_stdout_fd_type
+
+    if [ "$LOG_FD_TYPE" == "$FD_TYPE_TTY" ]; then
+        LOG_MESSAGE+=("${!color}")
+        LOG_MESSAGE+=("[$log_level]")
+        LOG_MESSAGE+=("$COLOR_DEFAULT")
+    else
+        LOG_MESSAGE+=("[$log_level]")
+    fi
 }
 
 function _get_default_log_message() {
@@ -92,4 +114,21 @@ function _get_log_message() {
             _get_default_log_message "$@"
         fi
     fi
+}
+
+function _get_stdout_fd_type() {
+    exec 9>&1
+
+    if [[ "$(_stat type /dev/fd/9)" =~ [Ff]ifo* ]]; then
+        LOG_FD_TYPE="$FD_TYPE_PIPE"
+        exec 3>&1
+    elif [ -t 1 ] || [ ! -f "/dev/fd/9" ]; then
+        LOG_FD_TYPE="$FD_TYPE_TTY"
+        exec 3>&2
+    else
+        LOG_FD_TYPE="$FD_TYPE_FILE"
+        exec 3>&1
+    fi
+
+    export LOG_FD_TYPE
 }

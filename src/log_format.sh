@@ -50,9 +50,15 @@ function _get_debug_log_format() {
     fi
 }
 
+function _get_json_log_format() {
+    printf "%s" '{"level":"%s","message":"%s","timestamp":"%s"}\n'
+}
+
 function _get_log_format() {
     if [[ "${LOG_LEVELS["$1"]}" -le "${LOG_LEVELS["$MAX_LOG_LEVEL"]}" ]]; then
-        if [ "$MAX_LOG_LEVEL" == "$LOG_DEBUG" ]; then 
+        if [ -n "$LOG_FORMAT_STRUCTURED" ]; then
+            _get_json_log_format
+        elif [ "$MAX_LOG_LEVEL" == "$LOG_DEBUG" ]; then
             _get_debug_log_format
         else
             _get_default_log_format
@@ -66,13 +72,34 @@ function _set_log_level() {
 
     _get_stdout_fd_type
 
-    if [ "$LOG_FD_TYPE" == "$FD_TYPE_TTY" ]; then
+    if [ -n "$LOG_FORMAT_STRUCTURED" ]; then
+        LOG_MESSAGE+=("$log_level")
+    elif [ "$LOG_FD_TYPE" == "$FD_TYPE_TTY" ]; then
         LOG_MESSAGE+=("${!color}")
         LOG_MESSAGE+=("[$log_level]")
         LOG_MESSAGE+=("$COLOR_DEFAULT")
     else
         LOG_MESSAGE+=("[$log_level]")
     fi
+}
+
+function _json_escape() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    printf "%s" "$s"
+}
+
+function _get_json_log_message() {
+    local message="$1"
+    local log_level="$2"
+
+    LOG_MESSAGE=()
+    _set_log_level "$log_level"
+
+    LOG_MESSAGE+=("$(_json_escape "$message")")
+    LOG_MESSAGE+=("$(date -Ins)")
 }
 
 function _get_default_log_message() {
@@ -108,7 +135,9 @@ function _get_debug_log_message() {
 
 function _get_log_message() {
     if [[ "${LOG_LEVELS["$2"]}" -le "${LOG_LEVELS["$MAX_LOG_LEVEL"]}" ]]; then
-        if [ "$MAX_LOG_LEVEL" == "$LOG_DEBUG" ]; then 
+        if [ -n "$LOG_FORMAT_STRUCTURED" ]; then
+            _get_json_log_message "$@"
+        elif [ "$MAX_LOG_LEVEL" == "$LOG_DEBUG" ]; then
             _get_debug_log_message "$@"
         else
             _get_default_log_message "$@"

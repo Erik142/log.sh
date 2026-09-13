@@ -31,6 +31,10 @@ function set_max_log_level() {
     fi
 }
 
+function set_structured_log() {
+    export LOG_FORMAT_STRUCTURED="1"
+}
+
 function _log() {
     local log_level="$2"
     local func_name_index=${FUNCNAME_INDEXES[-1]}

@@ -54,3 +54,18 @@ setup() {
   assert_success
   assert_output --regexp "[Rr]egular"
 }
+
+@test "structured log output is valid JSON" {
+  set_structured_log
+  run log "This is a log message"
+  assert_success
+  echo "$output" | jq -e . >/dev/null
+}
+
+@test "structured log output escapes quotes in the message" {
+  set_structured_log
+  run log 'message with "quotes" inside'
+  assert_success
+  echo "$output" | jq -e . >/dev/null
+  assert_equal "$(echo "$output" | jq -r .message)" 'message with "quotes" inside'
+}

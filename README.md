@@ -50,4 +50,10 @@ DEBUG
 
 The default configuration allows log messages up to, and including, INFO, to be printed.
 
+Log messages can be printed as JSON instead of the default plain-text format:
+
+```bash
+set_structured_log
+```
+
 See the [examples](examples/) directory for example implementations, or check out the [jorp.sh](https://github.com/Erik142/jorp.sh) project for a "real" implementation of a project that is using log.sh!

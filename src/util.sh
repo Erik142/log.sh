@@ -61,7 +61,7 @@ function _stat() {
     fi
   fi
   case $1 in
-    type) FORMARG="$FORMOPT $TYPEFORM" ; shift ;;
+    type) shift ;;
   esac
-  /usr/bin/stat -L "$FORMARG" "$@"
+  /usr/bin/stat -L "$FORMOPT" "$TYPEFORM" "$@"
 }

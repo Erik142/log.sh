@@ -42,3 +42,30 @@ setup() {
     assert_output --partial "$level"
   done
 }
+
+@test "_stat type identifies a pipe as a pipe" {
+  run bash -c "source '${TOP}/src/util.sh'; echo hi | _stat type /dev/fd/0"
+  assert_success
+  assert_output --regexp "[Ff]ifo"
+}
+
+@test "_stat type identifies a regular file as a regular file" {
+  run bash -c "source '${TOP}/src/util.sh'; _stat type '${TOP}/README.md'"
+  assert_success
+  assert_output --regexp "[Rr]egular"
+}
+
+@test "structured log output is valid JSON" {
+  set_structured_log
+  run log "This is a log message"
+  assert_success
+  echo "$output" | jq -e . >/dev/null
+}
+
+@test "structured log output escapes quotes in the message" {
+  set_structured_log
+  run log 'message with "quotes" inside'
+  assert_success
+  echo "$output" | jq -e . >/dev/null
+  assert_equal "$(echo "$output" | jq -r .message)" 'message with "quotes" inside'
+}
